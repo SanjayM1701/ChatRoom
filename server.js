@@ -4,11 +4,12 @@ const http = require('http');
 const socketio = require('socket.io');
 const formateMessage = require('./utils/messages');
 const { userJoin, getCurrentUser, userLeave, getRoomUsers } = require('./utils/users');
-const port = 80 || process.env.port;
 
 const app = express();
 const server = http.createServer(app);
 const io = socketio(server);
+
+
 
 const botName = 'Admin';
 
@@ -21,14 +22,14 @@ io.on('connection', (socket) => {
 
         socket.join(user.room);
 
-        socket.emit('message', formateMessage(botName, 'Welcome to Chat Web-app!'));
+        socket.emit('message', formateMessage(botName, 'Welcome to ChatRoom!'));
 
         socket.broadcast.to(user.room).emit('message', formateMessage(botName, `${user.username} has joined the chat`));
 
-            io.to(user.room).emit('roomUsers', {
-                room : user.room,
-                users: getRoomUsers(user.room)
-            });
+        io.to(user.room).emit('roomUsers', {
+            room: user.room,
+            users: getRoomUsers(user.room)
+        });
     });
 
 
@@ -46,11 +47,13 @@ io.on('connection', (socket) => {
         };
 
         io.to(user.room).emit('roomUsers', {
-            room : user.room,
+            room: user.room,
             users: getRoomUsers(user.room),
         });
     });
 });
+
+const port = 80 || process.env.port;
 
 server.listen(port, () => {
     console.log(`Server running at port ${port}`);
